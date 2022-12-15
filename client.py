@@ -17,7 +17,6 @@ def client():
         client_socket.send(message.encode())  # send message
         
         print('Received from server: ' + data)  # show in terminal
-        # message =   # again take input
         break
 
     client_socket.close()  # close the connection
