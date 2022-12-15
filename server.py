@@ -10,7 +10,8 @@ def server ():
     server_socket = socket.socket()  # get instance
     # look closely. The bind() function takes tuple as argument
     server_socket.bind((host, port))  # bind host address and port together
-
+    
+    # read json files and put in list
     with open("q.json", "r") as file:
         fileData  = file.read()
         dataFile = json.loads(fileData)
