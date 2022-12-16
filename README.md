@@ -1,4 +1,4 @@
-# CN_Project
+# CN_Project / Quiz Game Client / Server
 Socket programming 
 
 in this project we make a client/server competition that server send question and client must send answers and then server check answer is correct or no ! 
