@@ -1,52 +1,50 @@
-import socket
 import json
+import socket
+import pickle
 
-def server ():
+def server_program():
+    data2 = []
     # get the hostname
     host = socket.gethostname()
     port = 5000  # initiate port no above 1024
-    clients_scores = [0,0,0,0]
-    
+
     server_socket = socket.socket()  # get instance
     # look closely. The bind() function takes tuple as argument
     server_socket.bind((host, port))  # bind host address and port together
-    
-    # read json files and put in list
-    with open("q.json", "r") as file:
-        fileData  = file.read()
-        dataFile = json.loads(fileData)
-    
+
     # configure how many client the server can listen simultaneously
-    server_socket.listen(3)
+    server_socket.listen(2)
     conn, address = server_socket.accept()  # accept new connection
     print("Connection from: " + str(address))
-    
-    index = 0
-    while True and dataFile[index]['question']:
-        
-        data = dataFile[0]['question']
-        conn.send(data.encode())  # send data to the client
-        for i in range(0 , 3) :
-            d = dataFile[0]['options'][i]
-            conn.send(d.encode()) # send
-        
+
+    with open('questions.json', 'r', encoding='utf8') as file:
+        dataFile = json.load(file)
+
+    def exclude_answer( i ):
+        return {
+            key: value for key, value in dataFile[i].items()
+            if key not in 'answer'
+        }
+    for i in range(0, len(dataFile)):
+        data2.append(exclude_answer(i))
+    print(data2)
+
+    k = 0
+    while True:
         # receive data stream. it won't accept data packet greater than 1024 bytes
-        datarec = conn.recv(1024).decode()
-        if not datarec:
+        data = conn.recv(1024).decode()
+        if k == 4:
             # if data is not received break
             break
-        print("from connected user: " + str(datarec))
-        
-        if datarec == str(dataFile[0]['answer']):
-            clients_scores[0] += 1
-        
-        # for i in len(clients_scores):
-        #     conn.send(str(clients_scores[i]).encode()) 
-            
-        print(clients_scores[0])
-        index += 1
-        break
-    
+        # send a dict that contains question and options to the client
+        # dump() convert dict to str
+        conn.sendall(str.encode(json.dumps(data2[k])))
+        print(type(json.dumps(data2[k])))
+        print(json.dumps(data2[k]))
+        k += 1
+
     conn.close()  # close the connection
-    
-server()
+
+
+if __name__ == '__main__':
+    server_program()
