@@ -17,7 +17,7 @@ def server_program():
     conn, address = server_socket.accept()  # accept new connection
     print("Connection from: " + str(address))
 
-    with open('questions.json', 'r', encoding='utf8') as file:
+    with open('q.json', 'r', encoding='utf8') as file:
         dataFile = json.load(file)
 
     def exclude_answer( i ):
@@ -33,6 +33,7 @@ def server_program():
     while True:
         # receive data stream. it won't accept data packet greater than 1024 bytes
         data = conn.recv(1024).decode()
+        print(data)
         if k == 4:
             # if data is not received break
             break
