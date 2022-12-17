@@ -10,7 +10,7 @@ def client_program():
     client_socket.connect((host, port))  # connect to the server
 
     QUIZ = 'QUIZ Match'
-    layout =[
+    layout = [
         [gui.Text('please enter your name')],
         [gui.Text('Name', size =(10,1)),gui.InputText('Name')],
         [gui.Submit()]

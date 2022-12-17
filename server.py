@@ -17,7 +17,7 @@ def server_program():
     conn, address = server_socket.accept()  # accept new connection
     print("Connection from: " + str(address))
 
-    with open('q.json', 'r', encoding='utf8') as file:
+    with open('questions.json', 'r', encoding='utf8') as file:
         dataFile = json.load(file)
 
     def exclude_answer( i ):
