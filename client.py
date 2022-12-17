@@ -49,6 +49,8 @@ def client_program():
         
         window = gui.Window(QUIZ).Layout(layout)
         button, values = window.Read()
+        ###
+        window.close()
         print(values)
         if values['1'] == True :
             message = '1'
