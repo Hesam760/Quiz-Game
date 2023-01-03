@@ -1,7 +1,7 @@
 import json
 import socket
-import pickle
 from _thread import *
+
 
 def server_program():
     data2 = []
@@ -29,53 +29,61 @@ def server_program():
     for i in range(0, len(dataFile)):
         data2.append(exclude_answer(i))
 
-
-
-    def progress(conn, address):
-        score = 0
+    def progress(conn, address, scoreBoard):
+        count = 0
         k = 0
+
         while True:
             # first time rcv the name
-            # receive data stream. it won't accept data packet greater than 1024 bytes
             data = conn.recv(1024).decode()
             print(data)
-            if k > 0:
-                if data == str(dataFile[k-1]['answer']):
-                    score += 1
-                    conn.sendall(str.encode(str(score)))
-                else:
-                    conn.sendall(str.encode(str(score)))
+
+            if data == str(dataFile[k-1]['answer']):
+                scoreBoard[address[1]] += 1
+            conn.sendall(str.encode(json.dumps(scoreBoard)))
+            print(scoreBoard)
 
             if k == len(data2):
-                print("len")
-                # if data is not received break
+                print("break")
                 break
-            # send a dict that contains question and options to the client
-            # dump() convert dict to str
+
+            """
+            send a dict that contains question
+            and options to the client.
+            dump() convert dict to str.
+            """
             conn.sendall(str.encode(json.dumps(data2[k])))
-            print(type(json.dumps(data2[k])))
-            print(json.dumps(data2[k]))
+
+            # ans = conn.recv(1024).decode()
+            # print(ans)
+
+            # conn.sendall(str.encode(json.dumps(scoreBoard)))
+            # if ans == str(dataFile[k-1]['answer']):
+            #     scoreBoard[address[1]] += 1
+            # print(scoreBoard)
+
             k += 1
-        print("client with port: " + str(address[1]) + " has score: " + str(score))
+
+        # print("client with port: " + str(address[1]) + " has score: " + str(score))
         conn.close()
 
     ThreadCount = 0
 
-    # ports =[]
-
-
+    # dict for score: key = port No. , value = score
+    my_score_dict = dict()
 
     while True:
         conn, address = server_socket.accept()
+        if address[1] not in my_score_dict:
+            my_score_dict[address[1]] = 0
         print('Connected to: ' + address[0] + ':' + str(address[1]))
         # ports.append(address[1])
-        start_new_thread(progress, (conn, address))
-        print(conn)
+        start_new_thread(progress, (conn, address, my_score_dict))
         ThreadCount += 1
         print('Thread Number: ' + str(ThreadCount))
+        print(my_score_dict)
 
     # server_socket.close()  # close the connection
-
 
 
 if __name__ == '__main__':

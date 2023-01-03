@@ -31,21 +31,34 @@ client_socket.connect((host, port))  # connect to the server
 QUIZ = 'QUIZ Match'
 layout = [
     [gui.Text('please enter your name')],
-    [gui.Text('Name', size =(10,1)),gui.InputText('Name')],
-    [gui.Submit()]
+    [gui.Text('Name', size = (10, 1)), gui.InputText('Name')],
+    [gui.Button('Submit')]
 ]
 
 window = gui.Window(QUIZ).Layout(layout)
-button , values = window.Read()
+button, values = window.Read()
 window.Close()
 message = values[0]
 # message = input(" name -> ")  # take input
 i = 0
 options = []
 ans = 0
+count = 0
+
 while True:
     client_socket.send(message.encode())  # send message(include answer)
+
+    # if count > 0:
+    #     scoreBoard = json.loads(client_socket.recv(1024))
+    #     print("score ,", scoreBoard)
+    #     client_socket.send("action".encode())
+    #     count = 0
+    scoreBoard = json.loads(client_socket.recv(1024))
+    print("score ,", scoreBoard)
+
     data = json.loads(client_socket.recv(1024))  # receive response(loads() convert str to dict
+
+    count += 1
     if not data:
         break
     
@@ -69,7 +82,7 @@ while True:
         [gui.Radio(options[1], "Answer", key='2')],
         [gui.Radio(options[2], "Answer", key='3')],
         [gui.Radio(options[3], "Answer",key='4')],
-        [gui.Submit()]
+        [gui.Button('Submit')]
     ]
     
     window = gui.Window(QUIZ).Layout(layout)
@@ -95,8 +108,8 @@ while True:
         # print("Timeout ! You dont answer the question")
         message = "TimeOut"
         window.Close()
-    
-    options.clear()    
+
+    options.clear()
     
     
 client_socket.close()  # close the connection
