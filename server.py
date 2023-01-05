@@ -1,7 +1,7 @@
 import json
 import socket
 from _thread import *
-
+from time import *
 
 def server_program():
     data2 = []
@@ -35,8 +35,13 @@ def server_program():
         k = 0
 
         while True:
+            # server_socket.settimeout(30)
             # first time rcv the name
             data = conn.recv(1024).decode()
+            # recv_time = time.time()
+            # try :
+            #     if 30 - recv_time - sendTime > 0:
+                    
             print(data)
 
             if data == str(dataFile[k-1]['answer']):
@@ -73,13 +78,24 @@ def server_program():
     # dict for score: key = port No. , value = score
     my_score_dict = dict()
 
+    counter = 0
+    connections = []
+    addresses = []
     while True:
         conn, address = server_socket.accept()
+        connections.append(conn)
         if address[1] not in my_score_dict:
             my_score_dict[address[1]] = 0
         print('Connected to: ' + address[0] + ':' + str(address[1]))
+        addresses.append(address[1])
+        counter += 1
+        
         # ports.append(address[1])
-        start_new_thread(progress, (conn, address, my_score_dict))
+        if counter > 2:
+            start_new_thread(progress, (connections[0], addresses[0], my_score_dict))
+            start_new_thread(progress, (connections[1], addresses[1], my_score_dict))
+            start_new_thread(progress, (connections[2], addresses[2], my_score_dict))
+
         ThreadCount += 1
         print('Thread Number: ' + str(ThreadCount))
         print(my_score_dict)

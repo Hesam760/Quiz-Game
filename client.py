@@ -46,6 +46,7 @@ ans = 0
 count = 0
 
 while True:
+    
     client_socket.send(message.encode())  # send message(include answer)
 
     # if count > 0:
@@ -62,8 +63,9 @@ while True:
     ]
     
     window1 = gui.Window(QUIZ).Layout(layoutScore)
-    button, values = window1.Read(timeout = 1000 * 5)
-    
+    button, values = window1.Read(timeout = 1000 * 3)
+    window1.close()
+ 
     print("score ,", scoreBoard)
 
     data = json.loads(client_socket.recv(1024))  # receive response(loads() convert str to dict
