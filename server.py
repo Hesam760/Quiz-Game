@@ -29,6 +29,7 @@ def server_program():
     for i in range(0, len(dataFile)):
         data2.append(exclude_answer(i))
 
+
     def progress(conn, address, scoreBoard):
         count = 0
         k = 0

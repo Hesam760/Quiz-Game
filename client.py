@@ -54,6 +54,16 @@ while True:
     #     client_socket.send("action".encode())
     #     count = 0
     scoreBoard = json.loads(client_socket.recv(1024))
+    print(type(scoreBoard))
+    
+    layoutScore = [
+        [gui.Text('scoreBoard')],
+        [gui.Text(str(scoreBoard))]
+    ]
+    
+    window1 = gui.Window(QUIZ).Layout(layoutScore)
+    button, values = window1.Read(timeout = 1000 * 5)
+    
     print("score ,", scoreBoard)
 
     data = json.loads(client_socket.recv(1024))  # receive response(loads() convert str to dict
