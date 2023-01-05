@@ -1,107 +1,80 @@
 import json
 import socket
+import time
 from _thread import *
-from time import *
+from datetime import datetime
 
-def server_program():
-    data2 = []
-    # get the hostname
-    host = socket.gethostname()
-    port = 5000  # initiate port no above 1024
+# get the hostname
+host = socket.gethostname()
 
-    server_socket = socket.socket()  # get instance
-    # look closely. The bind() function takes tuple as argument
-    server_socket.bind((host, port))  # bind host address and port together
+port = 5001  # initiate port no above 1024
 
-    # configure how many client the server can listen simultaneously
-    server_socket.listen(3)
-    # conn, address = server_socket.accept()  # accept new connection
-    # print("Connection from: " + str(address))
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # get instance
 
-    with open('questions.json', 'r', encoding='utf8') as file:
-        dataFile = json.load(file)
+server_socket.bind((host, port))  # bind host address and port together
 
-    def exclude_answer( i ):
-        return {
-            key: value for key, value in dataFile[i].items()
-            if key not in 'answer'
-        }
-    for i in range(0, len(dataFile)):
-        data2.append(exclude_answer(i))
+server_socket.listen(3)
+
+with open('questions.json', 'r', encoding='utf8') as file:
+    dataFile = json.load(file)
 
 
-    def progress(conn, address, scoreBoard):
-        count = 0
-        k = 0
+def exclude_answer(i):
+    return {
+        key: value for key, value in dataFile[i].items()
+        if key not in 'answer'
+    }
 
-        while True:
-            # server_socket.settimeout(30)
-            # first time rcv the name
-            data = conn.recv(1024).decode()
-            # recv_time = time.time()
-            # try :
-            #     if 30 - recv_time - sendTime > 0:
-                    
-            print(data)
 
-            if data == str(dataFile[k-1]['answer']):
-                scoreBoard[address[1]] += 1
-            conn.sendall(str.encode(json.dumps(scoreBoard)))
-            print(scoreBoard)
+data2 = []
+for i in range(0, len(dataFile)):
+    data2.append(exclude_answer(i))
 
-            if k == len(data2):
-                print("break")
-                break
+list_client_name = []
 
-            """
-            send a dict that contains question
-            and options to the client.
-            dump() convert dict to str.
-            """
-            conn.sendall(str.encode(json.dumps(data2[k])))
 
-            # ans = conn.recv(1024).decode()
-            # print(ans)
+def progress(conn, addr, score_board):
 
-            # conn.sendall(str.encode(json.dumps(scoreBoard)))
-            # if ans == str(dataFile[k-1]['answer']):
-            #     scoreBoard[address[1]] += 1
-            # print(scoreBoard)
+    username = conn.recv(1024).decode()
+    list_client_name.append(username)
 
-            k += 1
+    # send number of question
+    conn.send(str(len(dataFile)).encode())
 
-        # print("client with port: " + str(address[1]) + " has score: " + str(score))
-        conn.close()
-
-    ThreadCount = 0
-
-    # dict for score: key = port No. , value = score
-    my_score_dict = dict()
-
-    counter = 0
-    connections = []
-    addresses = []
     while True:
-        conn, address = server_socket.accept()
-        connections.append(conn)
-        if address[1] not in my_score_dict:
-            my_score_dict[address[1]] = 0
-        print('Connected to: ' + address[0] + ':' + str(address[1]))
-        addresses.append(address[1])
-        counter += 1
-        
-        # ports.append(address[1])
-        if counter > 2:
-            start_new_thread(progress, (connections[0], addresses[0], my_score_dict))
-            start_new_thread(progress, (connections[1], addresses[1], my_score_dict))
-            start_new_thread(progress, (connections[2], addresses[2], my_score_dict))
+        if len(list_client_name) == 3:
+            for i in range(0, len(dataFile)):
+                # send question
+                question = json.dumps(data2[i]).encode()
+                conn.send(question)
 
-        ThreadCount += 1
-        print('Thread Number: ' + str(ThreadCount))
-        print(my_score_dict)
+                # receive answer
+                ans = conn.recv(1024).decode()
 
-    # server_socket.close()  # close the connection
+                if ans == str(dataFile[i]['answer']):
+                    score_board[addr[1]] += 1
+
+                # send score board
+                conn.send(str.encode(json.dumps(score_board)))
+                print(score_board)
+
+            # bread the spin lock after quiz ended
+            break
+
+    conn.close()
 
 
-if __name__ == '__main__':
-    server_program()
+my_score_dict = dict()
+ThreadCount = 0
+
+while True:
+    conn, address = server_socket.accept()
+    if address[1] not in my_score_dict:
+        my_score_dict[address[1]] = 0
+    print('Connected to: ' + address[0] + ':' + str(address[1]))
+
+    start_new_thread(progress, (conn, address, my_score_dict))
+
+    ThreadCount += 1
+    print('Thread Number: ' + str(ThreadCount))
+    print(my_score_dict)
