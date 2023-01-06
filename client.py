@@ -54,9 +54,10 @@ question_No = int(client_socket.recv(1024).decode())
 
 for i in range(0, question_No):
 
+    
     message = client_socket.recv(1024).decode()  # receive question
     question_option = json.loads(message)
-
+    time1 = time.time()
 
     for j in range(0, 4):
         options.append(question_option['options'][j])
@@ -96,7 +97,6 @@ for i in range(0, question_No):
         exit()
             
     window.Close()
-
     t1.join()
     if passed_time >= 45:
         print("Timeout! Your answer will not be valid for this question")
@@ -104,7 +104,17 @@ for i in range(0, question_No):
         client_socket.send(message.encode())
     else:
         client_socket.send(message.encode())    # send answer
-
+        time2 = time.time()
+        diffTime = time2 - time1
+        if diffTime < 40 : 
+            waitingLayout = [
+                [gui.Text('Please wait for clients to answer!')],
+            ]
+            window2 = gui.Window('Wait').Layout(waitingLayout)
+            button , values = window2.Read(1000 * (45 - diffTime))
+            window2.Close()
+        
+            
     score_board = json.loads(client_socket.recv(1024).decode())
 
     layoutScore = [
@@ -112,7 +122,6 @@ for i in range(0, question_No):
         [gui.Text(str(score_board))]
     ]
 
-    window.Refresh()
     window = gui.Window(QUIZ).Layout(layoutScore)
     button, values = window.Read(timeout=1000 * 5)
     window.Close()

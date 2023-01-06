@@ -60,7 +60,8 @@ def progress(conn, addr, score_board):
                 print("t3:", timestamp)
                 
                 if ans != 'TimeOut':
-                    time.sleep(45-timestamp)
+                    # conn.send("waiting for clients".encode())
+                    time.sleep(abs(45-timestamp))
 
                 #     #if>30 time is up.
                 # if timestamp > 10:
