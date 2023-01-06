@@ -4,7 +4,7 @@ import PySimpleGUI as gui
 import time
 import datetime
 import threading
-
+import sys
 
 def showRemainingTime():
     while True:
@@ -75,24 +75,27 @@ for i in range(0, question_No):
         [gui.Radio(options[3], "Answer", key='4')],
         [gui.Button('Submit')]
     ]
-
-    window = gui.Window(QUIZ).Layout(layout)
-    button, values = window.Read()
-
+        
+    window = gui.Window(QUIZ).Layout(layout)    
+    window.Refresh()
+    button, values = window.Read(1000 * 45)
+    if button == 'Submit':
+        if values['1']:
+            message = '1'
+            answered = True
+        elif values['2']:
+            message = '2'
+            answered = True
+        elif values['3']:
+            message = '3'
+            answered = True
+        elif values['4']:
+            message = '4'
+            answered = True
+    if button == gui.WIN_CLOSED:
+        exit()
+            
     window.Close()
-
-    if values['1']:
-        message = '1'
-        answered = True
-    elif values['2']:
-        message = '2'
-        answered = True
-    elif values['3']:
-        message = '3'
-        answered = True
-    elif values['4']:
-        message = '4'
-        answered = True
 
     t1.join()
     if passed_time >= 45:
@@ -109,10 +112,11 @@ for i in range(0, question_No):
         [gui.Text(str(score_board))]
     ]
 
-    window1 = gui.Window(QUIZ).Layout(layoutScore)
-    button, values = window1.Read(timeout=1000 * 3)
-    window1.close()
-
+    window.Refresh()
+    window = gui.Window(QUIZ).Layout(layoutScore)
+    button, values = window.Read(timeout=1000 * 5)
+    window.Close()
+    
     options.clear()
 
 client_socket.close()  # close the connection
