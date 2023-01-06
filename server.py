@@ -42,19 +42,33 @@ def progress(conn, addr, score_board):
     conn.send(str(len(dataFile)).encode())
 
     while True:
-        if len(list_client_name) == 3:
+        if len(list_client_name) == 1:
             for i in range(0, len(dataFile)):
                 # send question
+                
+                localtime1 = time.time()
+                print("t1:", localtime1)
                 question = json.dumps(data2[i]).encode()
                 conn.send(question)
-
+                
                 # receive answer
                 ans = conn.recv(1024).decode()
+        
+                localtime2 = time.time()
+                print("t2:" , localtime2)
+                timestamp = localtime2 - localtime1
+                print("t3:", timestamp)
+                
+                if ans != 'TimeOut':
+                    time.sleep(45-timestamp)
 
+                #     #if>30 time is up.
+                # if timestamp > 10:
+                #     print ("Your time is up!\n")
+                #     conn.close()
                 if ans == str(dataFile[i]['answer']):
                     score_board[addr[1]] += 1
-
-                # send score board
+                    # send score board
                 conn.send(str.encode(json.dumps(score_board)))
                 print(score_board)
 
@@ -72,7 +86,6 @@ while True:
     if address[1] not in my_score_dict:
         my_score_dict[address[1]] = 0
     print('Connected to: ' + address[0] + ':' + str(address[1]))
-
     start_new_thread(progress, (conn, address, my_score_dict))
 
     ThreadCount += 1
