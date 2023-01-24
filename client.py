@@ -57,7 +57,7 @@ try :
         time1 = time.time()
 
         # recive options 
-        for j in range(0, 4):
+        for j in range(0, len(question_option['options'])) :
             options.append(question_option['options'][j])
 
         passed_time = 0
@@ -66,37 +66,61 @@ try :
         t1.start()
 
         #gui for the questions and options
-        layout = [
-            [gui.Text('Question')],
-            [gui.Text(question_option['question'])],
-            [gui.Radio(options[0], "Answer", default=True, key='1')],
-            [gui.Radio(options[1], "Answer", key='2')],
-            [gui.Radio(options[2], "Answer", key='3')],
-            [gui.Radio(options[3], "Answer", key='4')],
-            [gui.Button('Submit')]
-        ]
+        if len(question_option['options']) == 4:
+            layout = [
+                [gui.Text('Question')],
+                [gui.Text(question_option['question'])],
+                [gui.Radio(options[0], "Answer", default=True, key='1')],
+                [gui.Radio(options[1], "Answer", key='2')],
+                [gui.Radio(options[2], "Answer", key='3')],
+                [gui.Radio(options[3], "Answer", key='4')],
+                [gui.Button('Submit')]
+            ]
+            
+            window = gui.Window(QUIZ).Layout(layout)
+            button, values = window.Read(1000 * 45)
+            if button == 'Submit':
+                if values['1']:
+                    message = '1'
+                    answered = True
+                elif values['2']:
+                    message = '2'
+                    answered = True
+                elif values['3']:
+                    message = '3'
+                    answered = True
+                elif values['4']:
+                    message = '4'
+                    answered = True
+            window.Close()
 
+        elif len(question_option['options']) == 3:
+            
+            layout = [
+                [gui.Text('Question')],
+                [gui.Text(question_option['question'])],
+                [gui.Radio(options[0], "Answer", default=True, key='1')],
+                [gui.Radio(options[1], "Answer", key='2')],
+                [gui.Radio(options[2], "Answer", key='3')],
+                [gui.Button('Submit')]
+            ]
 
-        window = gui.Window(QUIZ).Layout(layout)
-        button, values = window.Read(1000 * 45)
-        if button == 'Submit':
-            if values['1']:
-                message = '1'
-                answered = True
-            elif values['2']:
-                message = '2'
-                answered = True
-            elif values['3']:
-                message = '3'
-                answered = True
-            elif values['4']:
-                message = '4'
-                answered = True
-
-        window.Close()
+            window = gui.Window(QUIZ).Layout(layout)
+            button, values = window.Read(1000 * 45)
+            if button == 'Submit':
+                if values['1']:
+                    message = '1'
+                    answered = True
+                elif values['2']:
+                    message = '2'
+                    answered = True
+                elif values['3']:
+                    message = '3'
+                    answered = True
+                    
+            window.Close()
 
         t1.join()
-
         if passed_time >= 45:
             print("Timeout! Your answer will not be valid for this question")
             message = "TimeOut"
@@ -126,7 +150,7 @@ try :
 
                 window = gui.Window('Chat window', layoutChat, font=('Helvetica', ' 13'),
                                     default_button_element_size=(8, 2), use_default_focus=False)
-
+                
                 remainingTime = 52 - diffTime
                 newtime = time.time() + remainingTime
 
@@ -183,6 +207,6 @@ try :
         options.clear()
 
     client_socket.close()  # close the connection
-    
+
 except :
     print("Unfortunately Connection is closed !")

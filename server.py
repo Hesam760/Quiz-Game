@@ -8,16 +8,13 @@ import threading
 
 separator_token = "<SEP>" # we will use this to separate the client name & message
 
-with open('users.json', 'r', encoding='utf8') as file:
+with open('testcase3/users.json', 'r', encoding='utf8') as file:
     usersFile = json.load(file)
 
 clientsName = []
 for i in range(0 , len(usersFile)):
-    if usersFile[i]['type'] == "host" : 
-        hostPort = usersFile[i]['port']
     if usersFile[i]['type'] == "client" :
-        clientsName.append(usersFile[i]["name"])
-
+        clientsName.append(usersFile[i]['name'])
 
 # get the hostname
 host = socket.gethostname()
@@ -30,7 +27,7 @@ server_socket.bind((host, port))  # bind host address and port together
 
 server_socket.listen(3)
 
-with open('questions.json', 'r', encoding='utf8') as file:
+with open('testcase3/questions.json', 'r', encoding='utf8') as file:
     dataFile = json.load(file)
 
 
@@ -49,6 +46,7 @@ list_client_name = []
 
 clients = {}
 
+connectionList = []
 def progress(conn, addr, score_board, username):
             
         # send number of question
@@ -77,7 +75,7 @@ def progress(conn, addr, score_board, username):
                     times = 45 - timestamp
                     newtime = time.time() + times
                     # timerThread = threading.Thread(target=timer, args=(newtime,))
-
+                    connectionList.append(conn)
                     # this function use for chat messages
                     def input_and_send():
                         while True:
@@ -94,7 +92,7 @@ def progress(conn, addr, score_board, username):
                                 conn.close()
                             else:
                                 msg = msg.replace(separator_token, ": ")
-                                for client in listOfConnections:
+                                for client in connectionList:
                                     client.send(msg.encode())
 
                     background_thread = threading.Thread(target=input_and_send)
@@ -110,9 +108,11 @@ def progress(conn, addr, score_board, username):
                 conn.send(str.encode(json.dumps(score_board)))
                 print(score_board)
                 time.sleep(5)
+                connectionList.clear()
+
             # bread the spin lock after quiz ended
             break
-
+            
     conn.close()
 
 
