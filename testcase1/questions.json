@@ -1,0 +1,32 @@
+[
+    {
+        "question": "Who was the first woman pilot to fly solo across the Atlantic?",
+        "options": [
+            "Raymonde de Laroche",
+            "Kimberly Anyadike",
+            "Zoya Agarwal",
+            "Amelia Earhart"
+        ],
+        "answer": 4
+    },
+    {
+        "question": "What is cynophobia?",
+        "options": [
+            "fear of cats",
+            "fear of dogs",
+            "fear of spiders",
+            "fear of snakes"
+        ],
+        "answer": 2
+    },
+    {
+        "question": "How many languages are written from right to left?",
+        "options": [
+            "12",
+            "30",
+            "18",
+            "52"
+        ],
+        "answer": 1
+    }
+]

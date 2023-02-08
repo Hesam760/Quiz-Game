@@ -1,0 +1,27 @@
+[
+    {
+        "type": "host",
+        "port": 1234,
+        "name": "host"
+    },
+    {
+        "type": "client",
+        "port": 6060,
+        "name": "guest1234"
+    },
+    {
+        "type": "client",
+        "port": 6061,
+        "name": "کاربر2"
+    },
+    {
+        "type": "client",
+        "port": 6062,
+        "name": "Ray"
+    },
+    {
+        "type": "client",
+        "port": 6063,
+        "name": "Tracie"
+    }
+]

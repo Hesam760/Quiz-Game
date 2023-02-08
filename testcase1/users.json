@@ -1,0 +1,22 @@
+[
+    {
+        "type": "host",
+        "port": 9000,
+        "name": "server"
+    },
+    {
+        "type": "client",
+        "port": 9010,
+        "name": "Bob"
+    },
+    {
+        "type": "client",
+        "port": 9011,
+        "name": "Alice"
+    },
+    {
+        "type": "client",
+        "port": 9012,
+        "name": "Katie"
+    }
+]
